@@ -1,0 +1,4 @@
+GET http://localhost:8080/v1/api/user/1
+
+###
+GET http://localhost:8080/v1/api/user/error-test
