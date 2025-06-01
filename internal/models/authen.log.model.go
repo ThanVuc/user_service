@@ -1,4 +1,4 @@
-package logstruct
+package models
 
 type LogString interface {
 	String() string

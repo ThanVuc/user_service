@@ -2,6 +2,12 @@ package response
 
 import "github.com/gin-gonic/gin"
 
+/*
+	@Author: Sinh
+	@Date: 2025/6/1
+	@Description: This package provides a standardized way to handle success responses in the application.
+*/
+
 type SuccessResponse struct {
 	StatusCode       int         `json:"statusCode"`
 	Message          string      `json:"message"`

@@ -1,13 +1,17 @@
 package helper
 
+/*
+	@Author: Sinh
+	@Date: 2025/6/1
+	@Description: Collect route information for documentation, backend usage, and backup.
+*/
 import (
 	"fmt"
 	"os"
+	"user_service/global"
 )
 
 // path format: method::http://domain/v1/api/path
-
-var DOMAIN = fmt.Sprintf("http://%s:%d", "localhost", 8080)
 
 type Route struct {
 	Method string `json:"method"`
@@ -25,14 +29,17 @@ var (
 	routeList = []*Route{}
 )
 
+// RegisterRoute registers a new route with the specified method and path.
+// To view details, please refer to the routers in the internal/routers directory.
 func RegisterRoute(method, path string) {
 	routeList = append(routeList, NewRoute(method, path))
 }
 
 func GetRoutes() []string {
+	var DOMAIN = fmt.Sprintf("http://%s:%d", global.Config.Server.Host, global.Config.Server.Port)
 	var routes []string = []string{}
 	for _, route := range routeList {
-		routes = append(routes, fmt.Sprintf("%s::%s%s", route.Method, DOMAIN, route.Path))
+		routes = append(routes, fmt.Sprintf("%s::%s/%s", route.Method, DOMAIN, route.Path))
 	}
 	return routes
 }
@@ -56,7 +63,7 @@ func WriteRouteToFile() {
 
 	routes := GetRoutes()
 	for _, route := range routes {
-		routePath := fmt.Sprintf("%s::%s", route, DOMAIN)
+		routePath := fmt.Sprintf(route)
 		_, err = file.WriteString(routePath + "\n")
 		if err != nil {
 			fmt.Println("Error writing to file:", err)

@@ -4,11 +4,18 @@ import (
 	"user_service/pkg/loggers"
 	"user_service/pkg/settings"
 
-	"gorm.io/gorm"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
+/*
+@Author: Sinh
+@Date: 2025/6/1
+@Description: This package defines global variables that are used throughout the application.
+*/
 var (
-	Config     settings.Config
-	Logger     *loggers.LoggerZap
-	PostgresDb *gorm.DB
+	Config       settings.Config
+	Logger       *loggers.LoggerZap
+	PostgresPool *pgxpool.Pool
+	RedisDb      *redis.Client
 )

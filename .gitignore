@@ -36,3 +36,6 @@ Thumbs.db
 
 # backup files
 /backup
+
+# Makefile
+Makefile

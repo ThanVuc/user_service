@@ -2,7 +2,8 @@ package loggers
 
 import (
 	"os"
-	logstruct "user_service/internal/log_struct"
+	"time"
+	"user_service/internal/models"
 	"user_service/pkg/response"
 	"user_service/pkg/settings"
 
@@ -29,32 +30,41 @@ func (l *LoggerZap) Error(
 	)
 }
 
-func (l *LoggerZap) Info(message logstruct.LogString, fields ...zap.Field) {
+// Overwrite the Error method to accept a LogString
+func (l *LoggerZap) Info(message models.LogString, fields ...zap.Field) {
 	l.Logger.Info(message.String(), fields...)
 }
 
+// Overwrite the Info method to accept a string message
+func (l *LoggerZap) InfoString(message string, fields ...zap.Field) {
+	l.Logger.Info(message, fields...)
+}
+
+// Create a new LoggerZap instance with the provided configuration
 func NewLogger(cfg settings.Log) *LoggerZap {
 	logLevel := cfg.Level
 	var level zapcore.Level = getLogLevelFromConfig(logLevel)
 
 	encoder := getEncoder()
 	hook := lumberjack.Logger{
-		Filename:   cfg.FileLogPath,
+		Filename:   cfg.FileLogPath + time.Now().Format("2006010215") + "_user.log",
 		MaxSize:    cfg.MaxSize, // megabytes
 		MaxBackups: cfg.MaxBackups,
 		MaxAge:     cfg.MaxAge,   //days
 		Compress:   cfg.Compress, // disabled by default
 	}
+
 	core := zapcore.NewCore(
 		encoder,
 		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)),
 		level,
 	)
 	return &LoggerZap{
-		Logger: zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel)),
+		Logger: zap.New(core, zap.AddCaller()),
 	}
 }
 
+// create a new zap encoder with custom configuration
 func getEncoder() zapcore.Encoder {
 	// Set the encoder configuration
 	encoderConfig := zap.NewProductionEncoderConfig()
@@ -65,6 +75,7 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
+// getLogLevelFromConfig returns the zapcore.Level based on the log level string from the config
 func getLogLevelFromConfig(logLevel string) zapcore.Level {
 	var level zapcore.Level
 	switch logLevel {

@@ -2,6 +2,12 @@ package response
 
 type HTTPStatusCode int
 
+/*
+@Author: Sinh
+@Date: 2025/6/1
+@Description: This package defines a set of HTTP status codes and their corresponding messages
+@Note: These codes are used to standardize responses in the application, particularly for error handling.
+*/
 const (
 	OK                     HTTPStatusCode = 200
 	CREATED                HTTPStatusCode = 201

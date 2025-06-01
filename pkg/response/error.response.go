@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+/*
+	@Author: Sinh
+	@Date: 2025/6/1
+	@Description: This package provides a standardized way to handle error responses in the application.
+*/
+
 // ErrorResponse is a struct that represents an error response
 type ErrorResponse struct {
 	StatusCode int    `json:"statusCode"`
@@ -12,6 +18,7 @@ type ErrorResponse struct {
 	CreatedAt  string `json:"createdAt"`
 }
 
+// The method to return the error response in controller
 func BadRequest(message string) ErrorResponse {
 	return ErrorResponse{
 		StatusCode: int(BAD_REQUEST),

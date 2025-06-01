@@ -7,6 +7,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+/*
+@Author: Sinh
+@Date: 2025/6/1
+@Description: Load configuration from a YAML file using Viper.
+The configuration file file is loaded to the global.Config variable.
+*/
 func LoadConfig() {
 	viper := viper.New()
 	// Add both the relative path and current directory for flexibility

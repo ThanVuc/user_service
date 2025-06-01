@@ -5,6 +5,13 @@ import (
 	"github.com/google/uuid"
 )
 
+/*
+	@Author: Sinh
+	@Date:
+	@Description: Middleware to track logs by generating a unique request ID if not provided by
+	the proxy
+*/
+
 func TrackLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestId := c.GetHeader("x-request-id")

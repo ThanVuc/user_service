@@ -1,5 +1,14 @@
 package settings
 
+/*
+	@Author: Sinh
+	@Date: 2025/6/1
+	@Description: This file create a configuration struct for the application.
+	@Note: The configuration struct is used to store the configuration of the application.
+	All the configuration is loaded from a YAML file using Viper.
+	And it is stored in the global variable `Config` in the `global` package.
+*/
+
 type Config struct {
 	Server   Server  `mapstructure:"server" json:"server" yaml:"server"`
 	Postgres Progres `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
@@ -10,6 +19,7 @@ type Config struct {
 type Server struct {
 	Port int    `mapstructure:"port" json:"port" yaml:"port"`
 	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	Mode string `mapstructure:"mode" json:"mode" yaml:"mode"`
 }
 
 type Progres struct {
@@ -29,6 +39,7 @@ type Redis struct {
 	Port     int    `mapstructure:"port" json:"port" yaml:"port"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	DB       int    `mapstructure:"db" json:"db" yaml:"db"`
+	PoolSize int    `mapstructure:"pool_size" json:"pool_size" yaml:"pool_size"`
 }
 
 type Log struct {
