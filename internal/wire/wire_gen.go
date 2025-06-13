@@ -12,11 +12,11 @@ import (
 	"user_service/internal/services"
 )
 
-// Injectors from auth.wire.go:
+// Injectors from user.wire.go:
 
-func InjectAuthController() *controller.AuthController {
-	iAuthRepo := repos.NewAuthRepo()
-	iAuthService := services.NewAuthService(iAuthRepo)
-	authController := controller.CreateAuthController(iAuthService)
-	return authController
+func InjectUserController() *controller.UserController {
+	iUserRepo := repos.NewUserRepo()
+	iUserService := services.NewUserService(iUserRepo)
+	userController := controller.NewUserController(iUserService)
+	return userController
 }

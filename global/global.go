@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"github.com/streadway/amqp"
 )
 
 /*
@@ -14,8 +15,10 @@ import (
 @Description: This package defines global variables that are used throughout the application.
 */
 var (
-	Config       settings.Config
-	Logger       *loggers.LoggerZap
-	PostgresPool *pgxpool.Pool
-	RedisDb      *redis.Client
+	Config                settings.Config
+	Logger                *loggers.LoggerZap
+	PostgresPool          *pgxpool.Pool
+	RedisDb               *redis.Client
+	RabbitMQConnection    *amqp.Connection
+	RabbitMQSharedChannel *amqp.Channel
 )

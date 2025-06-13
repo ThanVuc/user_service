@@ -32,8 +32,12 @@ func ErrorHandler() gin.HandlerFunc {
 
 					c.JSON(e.StatusCode, e)
 				default:
-					logger.Error(response.InternalServerError("Unknown panic"), requestId, debug.Stack())
-					c.JSON(500, response.AnotherError(http.StatusInternalServerError, "Unknown panic"))
+					logger.Error(response.ErrorResponse{
+						StatusCode: http.StatusInternalServerError,
+						Message:    "An unexpected error occurred. Please try again later.",
+						CodeReason: "INTERNAL_SERVER_ERROR",
+					}, requestId, debug.Stack())
+					response.AnotherError(c, 500, "An unexpected error occurred. Please try again later.")
 				}
 			}
 

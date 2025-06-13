@@ -30,6 +30,13 @@ func (l *LoggerZap) Error(
 	)
 }
 
+func (l *LoggerZap) ErrorString(
+	message string,
+	fields ...zap.Field,
+) {
+	l.Logger.Error(message, fields...)
+}
+
 // Overwrite the Error method to accept a LogString
 func (l *LoggerZap) Info(message models.LogString, fields ...zap.Field) {
 	l.Logger.Info(message.String(), fields...)

@@ -1,11 +1,13 @@
 package routers
 
-import "user_service/internal/routers/auth"
+import (
+	"user_service/internal/routers/users"
+)
 
 type RouterGroup struct {
-	AuthRouterEnter *auth.AuthRouterGroup
+	UserRouterEnter *users.UserRouterGroup
 }
 
 var RouterGroupApp *RouterGroup = &RouterGroup{
-	AuthRouterEnter: &auth.AuthRouterGroup{},
+	UserRouterEnter: &users.UserRouterGroup{},
 }

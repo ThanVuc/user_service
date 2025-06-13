@@ -1,10 +1,8 @@
 package initialize
 
 import (
-	"user_service/internal/helper"
 	"user_service/internal/middlewares"
 	"user_service/internal/routers"
-	"user_service/internal/wire"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,8 +11,7 @@ func InitRouter(r *gin.Engine) {
 	r.Use(middlewares.TrackLogMiddleware())
 	// cor
 	// limiter global
-	authRouter := routers.RouterGroupApp.AuthRouterEnter.AuthRouter
-	authController := wire.InjectAuthController()
+	userRouter := routers.RouterGroupApp.UserRouterEnter.UserRouter
 
 	MainGroup := r.Group("v1/api")
 	{
@@ -24,13 +21,8 @@ func InitRouter(r *gin.Engine) {
 				"message": "Authentication Service is running",
 			})
 		})
-
-		MainGroup.POST("/test/createAuthor", authController.CreateAuthor)               // Create an author
-		MainGroup.POST("/test/createUserAndAuthor", authController.CreateUserAndAuthor) // Create a user and author
 	}
 	{
-		authRouter.InitAuthRouter(MainGroup) // Initialize the auth router group
+		userRouter.InitUserRouter(MainGroup)
 	}
-
-	helper.WriteRouteToFile()
 }

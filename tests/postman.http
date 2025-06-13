@@ -1,4 +1,4 @@
 POST http://localhost:8080/v1/api/auth/create-author
 
 ###
-POST http://localhost:8080/v1/api/test/createUserAndAuthor
+GET http://localhost:8081/v1/api/users/

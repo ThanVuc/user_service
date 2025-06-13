@@ -10,10 +10,11 @@ package settings
 */
 
 type Config struct {
-	Server   Server  `mapstructure:"server" json:"server" yaml:"server"`
-	Postgres Progres `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
-	Redis    Redis   `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Log      Log     `mapstructure:"log" json:"log" yaml:"log"`
+	Server   Server   `mapstructure:"server" json:"server" yaml:"server"`
+	Postgres Progres  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
+	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
+	RabbitMQ RabbitMQ `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
 }
 
 type Server struct {
@@ -49,4 +50,11 @@ type Log struct {
 	MaxBackups  int    `mapstructure:"max_backups" json:"max_backups" yaml:"max_backups"`
 	MaxAge      int    `mapstructure:"max_age" json:"max_age" yaml:"max_age"`
 	Compress    bool   `mapstructure:"compress" json:"compress" yaml:"compress"`
+}
+
+type RabbitMQ struct {
+	Host     string `mapstructure:"host" json:"host" yaml:"host"`
+	Port     int    `mapstructure:"port" json:"port" yaml:"port"`
+	User     string `mapstructure:"user" json:"user" yaml:"user"`
+	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }
