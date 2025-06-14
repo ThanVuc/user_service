@@ -19,8 +19,8 @@ func Run() {
 	LoadConfig()
 	InitLogger()
 	// InitRedis()
-	InitPostgreSQL()
-	InitRabbitMQ()
+	// InitPostgreSQL()
+	// InitRabbitMQ()
 
 	// init the app with gin
 	// This order is important, as the middleware needs to be set before the routes are initialized.
@@ -29,6 +29,6 @@ func Run() {
 	r.Use(middlewares.ErrorHandler())
 	InitRouter(r)
 
-	initDefaultProducers()
+	// initDefaultProducers()
 	r.Run(fmt.Sprintf(":%d", global.Config.Server.Port)) // listen and serve on
 }

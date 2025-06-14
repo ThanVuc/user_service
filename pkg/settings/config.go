@@ -17,6 +17,7 @@ type Config struct {
 	RabbitMQ                 RabbitMQ                 `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
 	GRPC                     GRPC                     `mapstructure:"grpc" json:"grpc" yaml:"grpc"`
 	GrpcAuthenticationClient GrpcAuthenticationClient `mapstructure:"grpc_authentication_client" json:"grpc_authentication_client" yaml:"grpc_authentication_client"`
+	GrpcAuthorizationClient  GrpcAuthorizationClient  `mapstructure:"grpc_authorization_client" json:"grpc_authorization_client" yaml:"grpc_authorization_client"`
 }
 
 type Server struct {
@@ -62,6 +63,11 @@ type RabbitMQ struct {
 }
 
 type GrpcAuthenticationClient struct {
+	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	Port int    `mapstructure:"port" json:"port" yaml:"port"`
+}
+
+type GrpcAuthorizationClient struct {
 	Host string `mapstructure:"host" json:"host" yaml:"host"`
 	Port int    `mapstructure:"port" json:"port" yaml:"port"`
 }

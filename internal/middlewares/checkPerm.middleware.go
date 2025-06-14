@@ -9,6 +9,7 @@ import (
 
 func CheckPerm(resource string, action string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		jwt := "asdkjsdfjskdfjg0"
 		authenticationClient, err := grpc_client.NewAuthenticationClient()
 		if err != nil {
 			panic(response.ErrorResponse{
@@ -17,8 +18,6 @@ func CheckPerm(resource string, action string) gin.HandlerFunc {
 				CodeReason: "Forbidden to access this resource",
 			})
 		}
-
-		jwt := "asdkjsdfjskdfjg0"
 		isValid, err := authenticationClient.ValidateToken(jwt)
 		if err != nil || !isValid {
 			panic(response.ErrorResponse{
@@ -29,7 +28,25 @@ func CheckPerm(resource string, action string) gin.HandlerFunc {
 		}
 		println("Token is valid")
 
-		// Check if the user has permission for the requested resource and action
+		authorizationClient, err := grpc_client.NewAuthorizationClient()
+		if err != nil {
+			panic(response.ErrorResponse{
+				StatusCode: 500,
+				Message:    err.Error(),
+				CodeReason: "Internal Server Error",
+			})
+		}
+
+		allowed, err := authorizationClient.CheckPerm(resource, action, jwt)
+		if err != nil || !allowed {
+			panic(response.ErrorResponse{
+				StatusCode: 403,
+				Message:    "Forbidden",
+				CodeReason: "You do not have permission to access this resource",
+			})
+		}
+
+		println("Permission granted for resource:", resource, "and action:", action)
 
 		c.Next() // Proceed to the next middleware or handler if permission is granted
 	}
