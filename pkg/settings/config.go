@@ -10,11 +10,13 @@ package settings
 */
 
 type Config struct {
-	Server   Server   `mapstructure:"server" json:"server" yaml:"server"`
-	Postgres Progres  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
-	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
-	RabbitMQ RabbitMQ `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
+	Server                   Server                   `mapstructure:"server" json:"server" yaml:"server"`
+	Postgres                 Progres                  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
+	Redis                    Redis                    `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Log                      Log                      `mapstructure:"log" json:"log" yaml:"log"`
+	RabbitMQ                 RabbitMQ                 `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
+	GRPC                     GRPC                     `mapstructure:"grpc" json:"grpc" yaml:"grpc"`
+	GrpcAuthenticationClient GrpcAuthenticationClient `mapstructure:"grpc_authentication_client" json:"grpc_authentication_client" yaml:"grpc_authentication_client"`
 }
 
 type Server struct {
@@ -57,4 +59,16 @@ type RabbitMQ struct {
 	Port     int    `mapstructure:"port" json:"port" yaml:"port"`
 	User     string `mapstructure:"user" json:"user" yaml:"user"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
+}
+
+type GrpcAuthenticationClient struct {
+	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	Port int    `mapstructure:"port" json:"port" yaml:"port"`
+}
+
+type GRPC struct {
+	Host           string `mapstructure:"host" json:"host" yaml:"host"`
+	Port           int    `mapstructure:"port" json:"port" yaml:"port"`
+	MaxRecvMsgSize int    `mapstructure:"max_recv_msg_size" json:"max_recv_msg_size" yaml:"max_recv_msg_size"` // in bytes
+	MaxSendMsgSize int    `mapstructure:"max_send_msg_size" json:"max_send_msg_size" yaml:"max_send_msg_size"` // in bytes
 }

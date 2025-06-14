@@ -2,6 +2,7 @@ package users
 
 import (
 	"user_service/internal/helper"
+	"user_service/internal/middlewares"
 	"user_service/internal/wire"
 
 	"github.com/gin-gonic/gin"
@@ -15,8 +16,8 @@ func (ur *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 
 	privateRouter := Router.Group("users")
 	{
-		privateRouter.GET("/", userController.GetUserById)
-		privateRouter.PUT("/", userController.UpdateUserInfo)
+		privateRouter.GET("/", middlewares.CheckPerm("userInfo", "getOne"), userController.GetUserById)
+		privateRouter.PUT("/", middlewares.CheckPerm("userInfo", "update"), userController.UpdateUserInfo)
 	}
 
 	ur.registerUser()
@@ -25,6 +26,6 @@ func (ur *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 func (ar *UserRouter) registerUser() {
 	helper.AddResource("userInfo", []string{
 		"getOne",
-		"Update",
+		"update",
 	})
 }
