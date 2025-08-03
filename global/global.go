@@ -1,12 +1,11 @@
 package global
 
 import (
-	"user_service/pkg/loggers"
 	"user_service/pkg/settings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
-	"github.com/streadway/amqp"
+	"github.com/thanvuc/go-core-lib/cache"
+	"github.com/thanvuc/go-core-lib/log"
 )
 
 /*
@@ -15,10 +14,8 @@ import (
 @Description: This package defines global variables that are used throughout the application.
 */
 var (
-	Config                settings.Config
-	Logger                *loggers.LoggerZap
-	PostgresPool          *pgxpool.Pool
-	RedisDb               *redis.Client
-	RabbitMQConnection    *amqp.Connection
-	RabbitMQSharedChannel *amqp.Channel
+	Config       settings.Config
+	Logger       log.Logger
+	PostgresPool *pgxpool.Pool
+	RedisDb      *cache.RedisCache
 )

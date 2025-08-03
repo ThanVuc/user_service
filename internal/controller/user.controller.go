@@ -1,32 +1,26 @@
 package controller
 
 import (
+	"context"
 	"user_service/internal/services"
-	"user_service/pkg/response"
-
-	"github.com/gin-gonic/gin"
+	"user_service/internal/utils"
+	"user_service/proto/user"
 )
 
 type UserController struct {
-	UserService services.IUserService
+	user.UnimplementedUserServiceServer
+	userService services.UserService
 }
 
-func NewUserController(userService services.IUserService) *UserController {
+func NewUserController(
+	userService services.UserService,
+) *UserController {
 	return &UserController{
-		UserService: userService,
+		userService: userService,
 	}
 }
 
-func (uc *UserController) GetUserById(c *gin.Context) {
-	users, err := uc.UserService.GetUsers()
-	if err != nil {
-		response.NotFound(c, "users not found")
-		return
-	}
-
-	c.JSON(200, gin.H{"users": users})
-}
-
-func (uc *UserController) UpdateUserInfo(c *gin.Context) {
-	response.Ok(c, "update user info successfully", nil)
+func (uc *UserController) GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*user.GetUserProfileResponse, error) {
+	println("GetUserProfile called with request:", req)
+	return utils.WithSafePanic(ctx, req, uc.userService.GetUserProfile)
 }

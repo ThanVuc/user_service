@@ -1,29 +1,16 @@
 package services
 
 import (
-	"user_service/internal/database"
+	"context"
 	"user_service/internal/repos"
+	"user_service/proto/user"
 )
 
-type IUserService interface {
-	GetUsers() ([]database.UserProfile, error)
+type userService struct {
+	userRepo repos.UserRepo
 }
 
-type UserService struct {
-	repo repos.IUserRepo
-}
-
-func NewUserService(repo repos.IUserRepo) IUserService {
-	return &UserService{
-		repo: repo,
-	}
-}
-
-func (s *UserService) GetUsers() ([]database.UserProfile, error) {
-	users, err := s.repo.GetUsers()
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
+func (us *userService) GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*user.GetUserProfileResponse, error) {
+	us.userRepo.GetUserProfile(ctx, req)
+	return &user.GetUserProfileResponse{}, nil
 }
