@@ -1,11 +1,14 @@
 package initialize
 
 import (
-	"fmt"
+	"context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 	"user_service/global"
-	"user_service/internal/middlewares"
 
-	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 /*
@@ -16,19 +19,39 @@ establishing database connections, and setting up the HTTP server with the speci
 @Note: This function is the entry point for the application, setting up the necessary components
 */
 func Run() {
+	print("gRPC servers are running...")
+	ctx, cancel := context.WithCancel(context.Background())
+	wg := &sync.WaitGroup{}
+	defer cancel()
+
 	LoadConfig()
 	InitLogger()
-	// InitRedis()
-	// InitPostgreSQL()
-	// InitRabbitMQ()
+	InitPostgreSQL()
+	InitRedis()
 
-	// init the app with gin
-	// This order is important, as the middleware needs to be set before the routes are initialized.
-	var r *gin.Engine = gin.New()
-	r.Use(middlewares.TrackLogMiddleware())
-	r.Use(middlewares.ErrorHandler())
-	InitRouter(r)
+	RunMigrations(global.PostgresPool)
 
-	// initDefaultProducers()
-	r.Run(fmt.Sprintf(":%d", global.Config.Server.Port)) // listen and serve on
+	logger := global.Logger
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	NewAuthService().RunServers(ctx, wg)
+
+	<-stop
+	cancel()
+	err := global.RedisDb.Close(wg)
+
+	if err != nil {
+		logger.Error("Failed to close Redis connection", "", zap.Error(err))
+	} else {
+		global.Logger.Info("Redis connection closed successfully", "")
+	}
+
+	if err := global.Logger.Sync(wg); err != nil {
+		logger.Error("Failed to sync logger", "", zap.Error(err))
+	} else {
+		global.Logger.Info("Logger synced successfully", "")
+	}
+
+	wg.Wait()
 }

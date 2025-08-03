@@ -10,20 +10,11 @@ package settings
 */
 
 type Config struct {
-	Server                   Server                   `mapstructure:"server" json:"server" yaml:"server"`
-	Postgres                 Progres                  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
-	Redis                    Redis                    `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Log                      Log                      `mapstructure:"log" json:"log" yaml:"log"`
-	RabbitMQ                 RabbitMQ                 `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
-	GRPC                     GRPC                     `mapstructure:"grpc" json:"grpc" yaml:"grpc"`
-	GrpcAuthenticationClient GrpcAuthenticationClient `mapstructure:"grpc_authentication_client" json:"grpc_authentication_client" yaml:"grpc_authentication_client"`
-	GrpcAuthorizationClient  GrpcAuthorizationClient  `mapstructure:"grpc_authorization_client" json:"grpc_authorization_client" yaml:"grpc_authorization_client"`
-}
-
-type Server struct {
-	Port int    `mapstructure:"port" json:"port" yaml:"port"`
-	Host string `mapstructure:"host" json:"host" yaml:"host"`
-	Mode string `mapstructure:"mode" json:"mode" yaml:"mode"`
+	Server   Server   `mapstructure:"server" json:"server" yaml:"server"`
+	Postgres Progres  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
+	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
+	RabbitMQ RabbitMQ `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
 }
 
 type Progres struct {
@@ -44,6 +35,7 @@ type Redis struct {
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	DB       int    `mapstructure:"db" json:"db" yaml:"db"`
 	PoolSize int    `mapstructure:"pool_size" json:"pool_size" yaml:"pool_size"`
+	MinIdle  int    `mapstructure:"min_idle" json:"min_idle" yaml:"min_idle"`
 }
 
 type Log struct {
@@ -62,19 +54,14 @@ type RabbitMQ struct {
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }
 
-type GrpcAuthenticationClient struct {
-	Host string `mapstructure:"host" json:"host" yaml:"host"`
-	Port int    `mapstructure:"port" json:"port" yaml:"port"`
-}
-
-type GrpcAuthorizationClient struct {
-	Host string `mapstructure:"host" json:"host" yaml:"host"`
-	Port int    `mapstructure:"port" json:"port" yaml:"port"`
-}
-
-type GRPC struct {
-	Host           string `mapstructure:"host" json:"host" yaml:"host"`
-	Port           int    `mapstructure:"port" json:"port" yaml:"port"`
-	MaxRecvMsgSize int    `mapstructure:"max_recv_msg_size" json:"max_recv_msg_size" yaml:"max_recv_msg_size"` // in bytes
-	MaxSendMsgSize int    `mapstructure:"max_send_msg_size" json:"max_send_msg_size" yaml:"max_send_msg_size"` // in bytes
+type Server struct {
+	Host             string `mapstructure:"host" json:"host" yaml:"host"`
+	AuthPort         int    `mapstructure:"auth_port" json:"auth_port" yaml:"auth_port"`
+	PermissionPort   int    `mapstructure:"permission_port" json:"permission_port" yaml:"permission_port"`
+	RolePort         int    `mapstructure:"role_port" json:"role_port" yaml:"role_port"`
+	TokenPort        int    `mapstructure:"token_port" json:"token_port" yaml:"token_port"`
+	MaxRecvMsgSize   int    `mapstructure:"max_recv_msg_size" json:"max_recv_msg_size" yaml:"max_recv_msg_size"`
+	MaxSendMsgSize   int    `mapstructure:"max_send_msg_size" json:"max_send_msg_size" yaml:"max_send_msg_size"`
+	KeepaliveTime    int    `mapstructure:"keepalive_time" json:"keepalive_time" yaml:"keepalive_time"`          // in seconds
+	KeepaliveTimeout int    `mapstructure:"keepalive_timeout" json:"keepalive_timeout" yaml:"keepalive_timeout"` // in seconds
 }

@@ -1,33 +1,24 @@
 package repos
 
 import (
-	"user_service/global"
+	"context"
 	"user_service/internal/database"
+	"user_service/internal/utils"
+	"user_service/proto/user"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/thanvuc/go-core-lib/log"
 )
 
-type IUserRepo interface {
-	GetUsers() ([]database.UserProfile, error)
+type userRepo struct {
+	logger log.Logger
+	sqlc   *database.Queries
 }
 
-type UserRepo struct {
-	sqlc *database.Queries
-}
-
-func NewUserRepo() IUserRepo {
-	return &UserRepo{
-		sqlc: database.New(global.PostgresPool),
+func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (string, error) {
+	id, err := utils.ToUUID(req.UserId)
+	if err != nil {
+		return "", err
 	}
-}
-
-func (r *UserRepo) GetUsers() ([]database.UserProfile, error) {
-	users := make([]database.UserProfile, 0)
-	users = append(users, database.UserProfile{
-		UserID:   pgtype.UUID{Bytes: uuid.New(), Valid: true},
-		Username: "testuser",
-		Fullname: "Test User",
-	})
-	return users, nil
+	ur.sqlc.GetUserProfile(ctx, id)
+	return "User data for ID: ", nil
 }

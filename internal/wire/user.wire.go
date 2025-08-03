@@ -16,5 +16,5 @@ func InjectUserController() *controller.UserController {
 		services.NewUserService,
 		controller.NewUserController,
 	)
-	return new(controller.UserController)
+	return nil
 }

@@ -1,4 +1,0 @@
-POST http://localhost:8082/v1/api/auth/create-author
-
-###
-GET http://localhost:8082/v1/api/users/
