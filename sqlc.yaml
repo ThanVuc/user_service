@@ -3,10 +3,9 @@ sql:
   - engine: "postgresql"
     queries:
       - "sql/query"
-      - "sql/query/user"
     schema: "sql/schema"
     gen:
       go:
         package: "database"
-        out: "./internal/database"
+        out: "./internal/grpc/database"
         sql_package: "pgx/v5"

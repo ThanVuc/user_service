@@ -6,10 +6,7 @@ import (
 	"net"
 	"sync"
 	"user_service/global"
-	"user_service/internal/controller"
-	"user_service/internal/wire"
 	"user_service/pkg/settings"
-	"user_service/proto/user"
 
 	"github.com/thanvuc/go-core-lib/log"
 	"go.uber.org/zap"
@@ -17,29 +14,27 @@ import (
 )
 
 type AuthServer struct {
-	userServiceServer *controller.UserController
-	logger            log.Logger
-	config            *settings.Server
+	logger log.Logger
+	config *settings.Server
 }
 
 func NewAuthService() *AuthServer {
 	return &AuthServer{
-		logger:            global.Logger,
-		config:            &global.Config.Server,
-		userServiceServer: wire.InjectUserController(),
+		logger: global.Logger,
+		config: &global.Config.Server,
 	}
 }
 
+func (as *AuthServer) runServers(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	go as.runServiceServer(ctx, wg)
+}
+
+// create server factory
 func (as *AuthServer) createServer() *grpc.Server {
 	server := grpc.NewServer()
 
-	user.RegisterUserServiceServer(server, as.userServiceServer)
 	return server
-}
-
-func (as *AuthServer) RunServers(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
-	go as.runServiceServer(ctx, wg)
 }
 
 func (as *AuthServer) runServiceServer(ctx context.Context, wg *sync.WaitGroup) {
@@ -85,7 +80,7 @@ func (as *AuthServer) serverListening(server *grpc.Server, lis net.Listener) {
 func (as *AuthServer) createListener() (net.Listener, error) {
 	err := error(nil)
 	lis := net.Listener(nil)
-	lis, err = net.Listen("tcp", fmt.Sprintf("%s:%d", as.config.Host, as.config.AuthPort))
+	lis, err = net.Listen("tcp", fmt.Sprintf("%s:%d", as.config.Host, as.config.UserPort))
 	if err != nil {
 		as.logger.Error("Failed to listen: %v", "", zap.Error(err))
 		return nil, err
