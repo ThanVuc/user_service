@@ -39,12 +39,7 @@ type Redis struct {
 }
 
 type Log struct {
-	Level       string `mapstructure:"level" json:"level" yaml:"level"`
-	FileLogPath string `mapstructure:"file_log_path" json:"file_log_path" yaml:"file_log_path"`
-	MaxSize     int    `mapstructure:"max_size" json:"max_size" yaml:"max_size"`
-	MaxBackups  int    `mapstructure:"max_backups" json:"max_backups" yaml:"max_backups"`
-	MaxAge      int    `mapstructure:"max_age" json:"max_age" yaml:"max_age"`
-	Compress    bool   `mapstructure:"compress" json:"compress" yaml:"compress"`
+	Level string `mapstructure:"level" json:"level" yaml:"level"`
 }
 
 type RabbitMQ struct {
@@ -56,7 +51,7 @@ type RabbitMQ struct {
 
 type Server struct {
 	Host             string `mapstructure:"host" json:"host" yaml:"host"`
-	AuthPort         int    `mapstructure:"auth_port" json:"auth_port" yaml:"auth_port"`
+	UserPort         int    `mapstructure:"user_port" json:"user_port" yaml:"user_port"`
 	PermissionPort   int    `mapstructure:"permission_port" json:"permission_port" yaml:"permission_port"`
 	RolePort         int    `mapstructure:"role_port" json:"role_port" yaml:"role_port"`
 	TokenPort        int    `mapstructure:"token_port" json:"token_port" yaml:"token_port"`
