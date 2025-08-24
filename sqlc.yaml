@@ -3,6 +3,7 @@ sql:
   - engine: "postgresql"
     queries:
       - "sql/query"
+      - "sql/query/user"
     schema: "sql/schema"
     gen:
       go:

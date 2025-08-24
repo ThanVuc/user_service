@@ -5,7 +5,8 @@ go 1.24.3
 require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5
-	github.com/thanvuc/go-core-lib v1.0.10
+	github.com/thanvuc/go-core-lib v1.0.16
+	github.com/wagslane/go-rabbitmq v0.15.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.73.0
 )
@@ -16,7 +17,6 @@ require (
 	github.com/redis/go-redis/v9 v9.11.0 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/spf13/viper v1.20.1 // indirect
-	github.com/wagslane/go-rabbitmq v0.15.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 )
 
@@ -42,6 +42,6 @@ require (
 	golang.org/x/sync v0.14.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	google.golang.org/protobuf v1.36.6
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

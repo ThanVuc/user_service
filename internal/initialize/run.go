@@ -7,6 +7,7 @@ import (
 	"sync"
 	"syscall"
 	"user_service/global"
+	"user_service/internal/eventbus/consumer"
 
 	"go.uber.org/zap"
 )
@@ -20,10 +21,11 @@ func Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 
-	startGrpcSerivces(ctx, wg)
-
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	startGrpcSerivces(ctx, wg)
+	consumer.RunConsumer(ctx)
 
 	<-stop
 	global.Logger.Info("Shutdown signal received, shutting down...", "")
