@@ -54,3 +54,11 @@ func Difference[T comparable](a, b []T) []T {
 	}
 	return diff
 }
+
+func ToBoolPointer(b bool) *bool {
+	return &b
+}
+
+func ToStringPointer(s string) *string {
+	return &s
+}

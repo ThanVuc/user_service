@@ -9,7 +9,7 @@ CREATE TABLE users (
     avatar_url text,
     bio text,
     slug character varying(255),
-    date_of_birth date,
+    date_of_birth timestamptz,
     gender boolean DEFAULT false,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP,

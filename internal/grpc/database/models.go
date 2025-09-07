@@ -15,7 +15,7 @@ type User struct {
 	AvatarUrl   pgtype.Text
 	Bio         pgtype.Text
 	Slug        pgtype.Text
-	DateOfBirth pgtype.Date
+	DateOfBirth pgtype.Timestamptz
 	Gender      pgtype.Bool
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
