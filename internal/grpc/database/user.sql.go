@@ -11,6 +11,72 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const getUserProfile = `-- name: GetUserProfile :many
+SELECT
+    u.id          AS user_id,
+    u.fullname    AS fullname,
+    u.email       AS email,
+    u.avatar_url  AS avatar_url,
+    u.bio         AS bio,
+    u.slug        AS slug,
+    u.date_of_birth AS date_of_birth,
+    u.gender      AS gender,
+    u.created_at  AS created_at,
+    u.updated_at  AS updated_at,
+    u.sentence    AS sentence,
+    u.author      AS author
+FROM users u
+WHERE u.id = $1
+`
+
+type GetUserProfileRow struct {
+	UserID      pgtype.UUID
+	Fullname    pgtype.Text
+	Email       string
+	AvatarUrl   pgtype.Text
+	Bio         pgtype.Text
+	Slug        pgtype.Text
+	DateOfBirth pgtype.Timestamptz
+	Gender      pgtype.Bool
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Sentence    pgtype.Text
+	Author      pgtype.Text
+}
+
+func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) ([]GetUserProfileRow, error) {
+	rows, err := q.db.Query(ctx, getUserProfile, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserProfileRow
+	for rows.Next() {
+		var i GetUserProfileRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.Fullname,
+			&i.Email,
+			&i.AvatarUrl,
+			&i.Bio,
+			&i.Slug,
+			&i.DateOfBirth,
+			&i.Gender,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Sentence,
+			&i.Author,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertUser = `-- name: InsertUser :one
 INSERT INTO users (id, email, created_at, updated_at)
 VALUES ($1, $2, $3, $4)
@@ -46,4 +112,42 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :one
+UPDATE users
+SET fullname      = $2,
+    bio           = $3,
+    date_of_birth = $4,
+    gender        = $5,
+    sentence      = $6,
+    author        = $7,
+    updated_at    = NOW()
+WHERE id = $1
+RETURNING id
+`
+
+type UpdateUserProfileParams struct {
+	ID          pgtype.UUID
+	Fullname    pgtype.Text
+	Bio         pgtype.Text
+	DateOfBirth pgtype.Timestamptz
+	Gender      pgtype.Bool
+	Sentence    pgtype.Text
+	Author      pgtype.Text
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, updateUserProfile,
+		arg.ID,
+		arg.Fullname,
+		arg.Bio,
+		arg.DateOfBirth,
+		arg.Gender,
+		arg.Sentence,
+		arg.Author,
+	)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
 }

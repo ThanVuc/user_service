@@ -6,7 +6,10 @@ import (
 	"net"
 	"sync"
 	"user_service/global"
+	"user_service/internal/grpc/controller"
+	"user_service/internal/grpc/wire"
 	"user_service/pkg/settings"
+	"user_service/proto/user"
 
 	"github.com/thanvuc/go-core-lib/log"
 	"go.uber.org/zap"
@@ -14,14 +17,16 @@ import (
 )
 
 type AuthServer struct {
-	logger log.Logger
-	config *settings.Server
+	userService *controller.UserController
+	logger      log.Logger
+	config      *settings.Server
 }
 
 func NewAuthService() *AuthServer {
 	return &AuthServer{
-		logger: global.Logger,
-		config: &global.Config.Server,
+		userService: wire.InjectUserController(),
+		logger:      global.Logger,
+		config:      &global.Config.Server,
 	}
 }
 
@@ -33,6 +38,8 @@ func (as *AuthServer) runServers(ctx context.Context, wg *sync.WaitGroup) {
 // create server factory
 func (as *AuthServer) createServer() *grpc.Server {
 	server := grpc.NewServer()
+
+	user.RegisterUserServiceServer(server, as.userService)
 
 	return server
 }
