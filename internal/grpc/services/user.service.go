@@ -25,7 +25,7 @@ func (us *userService) GetUserProfile(ctx context.Context, req *user.GetUserProf
         }, nil
     }
 
-    if userPr == nil || len(*userPr) == 0 {
+    if userPr == nil  {
         return &user.GetUserProfileResponse{
             Error: &common.Error{
                 Code:    1,

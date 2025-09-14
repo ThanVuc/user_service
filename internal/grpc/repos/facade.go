@@ -11,7 +11,7 @@ import (
 
 type (
 	UserRepo interface {
-		GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*[]database.GetUserProfileRow, error)
+		GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*database.GetUserProfileRow, error)
 		UpdateUserProfile(ctx context.Context, req *user.UpdateUserProfileRequest) (*pgtype.UUID, error)
 	}
 )

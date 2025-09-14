@@ -6,7 +6,7 @@ import (
 )
 type (
 	UserMapper interface { 
-		ConvertDbUserPrifileRowToGrpcUser(user *[]database.GetUserProfileRow) *user.UserProfileItem
+		ConvertDbUserPrifileRowToGrpcUser(user *database.GetUserProfileRow) *user.UserProfileItem
 	}
 )
 

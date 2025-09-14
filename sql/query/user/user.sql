@@ -3,7 +3,7 @@ INSERT INTO users (id, email, created_at, updated_at)
 VALUES ($1, $2, $3, $4)
 RETURNING id, email, created_at, updated_at;
 
--- name: GetUserProfile :many
+-- name: GetUserProfile :one
 SELECT
     u.id          AS user_id,
     u.fullname    AS fullname,
@@ -31,3 +31,11 @@ SET fullname      = $2,
     updated_at    = NOW()
 WHERE id = $1
 RETURNING id;
+
+
+-- name: UpdateSlugById :one
+UPDATE users
+SET slug = $2
+WHERE id = $1
+RETURNING id;
+

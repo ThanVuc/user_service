@@ -1,10 +1,16 @@
 package utils
 
 import (
+	"fmt"
 	"math"
+	"regexp"
+	"strings"
+	"time"
+	"unicode"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
+	"golang.org/x/text/unicode/norm"
 )
 
 func Contains[T comparable](slice []T, item T) bool {
@@ -61,4 +67,33 @@ func ToBoolPointer(b bool) *bool {
 
 func ToStringPointer(s string) *string {
 	return &s
+}
+
+func removeDiacritics(s string) string {
+	t := norm.NFD.String(s)
+	var result []rune
+	for _, r := range t {
+		if unicode.Is(unicode.Mn, r) {
+			continue
+		}
+		switch r {
+		case 'đ':
+			r = 'd'
+		case 'Đ':
+			r = 'D'
+		}
+		result = append(result, r)
+	}
+	return string(result)
+}
+
+func MakeSlug(fullname string, createdAt time.Time) string {
+	s := strings.ToLower(fullname)
+	s = removeDiacritics(s)
+	s = strings.ReplaceAll(s, " ", "-")
+	re := regexp.MustCompile(`[^a-z0-9-]+`)
+	s = re.ReplaceAllString(s, "")
+	s = strings.Trim(s, "-")
+
+	return fmt.Sprintf("%s-%d", s, createdAt.UnixMilli())
 }

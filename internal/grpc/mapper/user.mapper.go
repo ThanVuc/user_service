@@ -7,13 +7,13 @@ import (
 
 type userMapper struct{}
 
-func (u *userMapper) ConvertDbUserPrifileRowToGrpcUser(userPr *[]database.GetUserProfileRow) *user.UserProfileItem {
+func (u *userMapper) ConvertDbUserPrifileRowToGrpcUser(userPr *database.GetUserProfileRow) *user.UserProfileItem {
 	resp := &user.UserProfileItem{}
-	if userPr == nil || len(*userPr) == 0 {
+	if userPr == nil {
 		return nil
 	}
 
-	userProfileData := (*userPr)[0]
+	userProfileData := userPr
 
 	percentage := 0
 
