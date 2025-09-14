@@ -20,7 +20,7 @@ type userRepo struct {
 	pool   *pgxpool.Pool
 }
 
-func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*[]database.GetUserProfileRow, error) {
+func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfileRequest) (*database.GetUserProfileRow, error) {
 	userIdUUID, err := utils.ToUUID(req.Id)
 	if err != nil {
 		return nil, err
@@ -28,13 +28,33 @@ func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfile
 
 	userPr, err := ur.sqlc.GetUserProfile(ctx, userIdUUID)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 
-	if userPr == nil {
-		return nil, nil
+	if !userPr.Slug.Valid && userPr.Slug.String == "" {
+		var createdAt time.Time
+		if userPr.CreatedAt.Valid {
+			createdAt = userPr.CreatedAt.Time
+		} else {
+			createdAt = time.Now()
+		}
+		
+		newSlug := utils.MakeSlug(userPr.Fullname.String, createdAt)
+		_ ,err := ur.sqlc.UpdateSlugById(ctx, database.UpdateSlugByIdParams{
+			ID:   userIdUUID,
+			Slug: pgtype.Text{String: newSlug, Valid: true},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		userPr.Slug = pgtype.Text{String: newSlug, Valid: true}
 	}
 
+	
 	return &userPr, nil
 }
 
