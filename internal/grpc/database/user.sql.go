@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const getUserProfile = `-- name: GetUserProfile :many
+const getUserProfile = `-- name: GetUserProfile :one
 SELECT
     u.id          AS user_id,
     u.fullname    AS fullname,
@@ -44,37 +44,24 @@ type GetUserProfileRow struct {
 	Author      pgtype.Text
 }
 
-func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) ([]GetUserProfileRow, error) {
-	rows, err := q.db.Query(ctx, getUserProfile, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetUserProfileRow
-	for rows.Next() {
-		var i GetUserProfileRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.Fullname,
-			&i.Email,
-			&i.AvatarUrl,
-			&i.Bio,
-			&i.Slug,
-			&i.DateOfBirth,
-			&i.Gender,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Sentence,
-			&i.Author,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) (GetUserProfileRow, error) {
+	row := q.db.QueryRow(ctx, getUserProfile, id)
+	var i GetUserProfileRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Fullname,
+		&i.Email,
+		&i.AvatarUrl,
+		&i.Bio,
+		&i.Slug,
+		&i.DateOfBirth,
+		&i.Gender,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Sentence,
+		&i.Author,
+	)
+	return i, err
 }
 
 const insertUser = `-- name: InsertUser :one
@@ -112,6 +99,25 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateSlugById = `-- name: UpdateSlugById :one
+UPDATE users
+SET slug = $2
+WHERE id = $1
+RETURNING id
+`
+
+type UpdateSlugByIdParams struct {
+	ID   pgtype.UUID
+	Slug pgtype.Text
+}
+
+func (q *Queries) UpdateSlugById(ctx context.Context, arg UpdateSlugByIdParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, updateSlugById, arg.ID, arg.Slug)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const updateUserProfile = `-- name: UpdateUserProfile :one
