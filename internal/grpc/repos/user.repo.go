@@ -41,9 +41,9 @@ func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfile
 		} else {
 			createdAt = time.Now()
 		}
-		
+
 		newSlug := utils.MakeSlug(userPr.Fullname.String, createdAt)
-		_ ,err := ur.sqlc.UpdateSlugById(ctx, database.UpdateSlugByIdParams{
+		_, err := ur.sqlc.UpdateSlugById(ctx, database.UpdateSlugByIdParams{
 			ID:   userIdUUID,
 			Slug: pgtype.Text{String: newSlug, Valid: true},
 		})
@@ -54,7 +54,6 @@ func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfile
 		userPr.Slug = pgtype.Text{String: newSlug, Valid: true}
 	}
 
-	
 	return &userPr, nil
 }
 
@@ -66,6 +65,29 @@ func (ur *userRepo) UpdateUserProfile(ctx context.Context, req *user.UpdateUserP
 	userId, err := utils.ToUUID(req.Id)
 	if err != nil {
 		return nil, err
+	}
+
+	userPr, err := ur.sqlc.GetUserProfile(ctx, userId)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	if req.Fullname != "" && req.Fullname != userPr.Fullname.String {
+		var createdAt time.Time
+		if userPr.CreatedAt.Valid {
+			createdAt = userPr.CreatedAt.Time
+		}
+		newSlug := utils.MakeSlug(req.Fullname, createdAt)
+		_, err := ur.sqlc.UpdateSlugById(ctx, database.UpdateSlugByIdParams{
+			ID:   userId,
+			Slug: pgtype.Text{String: newSlug, Valid: true},
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var dob pgtype.Timestamptz
