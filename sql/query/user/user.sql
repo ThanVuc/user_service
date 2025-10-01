@@ -33,9 +33,11 @@ WHERE id = $1
 RETURNING id;
 
 
+
 -- name: UpdateSlugById :one
 UPDATE users
 SET slug = $2
 WHERE id = $1
 RETURNING id;
+
 
