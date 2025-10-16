@@ -41,3 +41,9 @@ WHERE id = $1
 RETURNING id;
 
 
+-- name: UpdateAvatarById :one
+UPDATE users
+SET avatar_url = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, avatar_url;

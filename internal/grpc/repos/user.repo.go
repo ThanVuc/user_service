@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"user_service/global"
 	"user_service/internal/grpc/database"
 	"user_service/internal/grpc/utils"
 	"user_service/proto/user"
@@ -34,6 +35,26 @@ func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfile
 		return nil, err
 	}
 
+	if !userPr.AvatarUrl.Valid && userPr.AvatarUrl.String == "" {
+		url, err := utils.GetDefaultAvatarUrl(userPr.Gender.Bool)
+		if err != nil {
+			return nil, err
+		}
+		
+		_, err = ur.sqlc.UpdateAvatarById(ctx, database.UpdateAvatarByIdParams{
+			ID:        userIdUUID,
+			AvatarUrl: pgtype.Text{String: url, Valid: true},
+		})
+		if err != nil {
+			return nil, err
+		}
+		userPr.AvatarUrl = pgtype.Text{String: url, Valid: true}
+	}
+	fmt.Println("Avatar URL:", userPr.AvatarUrl.String)
+	fmt.Println("Avatar URL:", userPr.Gender.Bool)
+	fmt.Println(global.Config.R2.Endpoint)
+
+	// If slug is empty, generate a new slug and update it in the database
 	if !userPr.Slug.Valid && userPr.Slug.String == "" {
 		var createdAt time.Time
 		if userPr.CreatedAt.Valid {
