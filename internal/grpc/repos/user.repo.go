@@ -34,6 +34,7 @@ func (ur *userRepo) GetUserProfile(ctx context.Context, req *user.GetUserProfile
 		return nil, err
 	}
 
+	
 	if !userPr.Slug.Valid && userPr.Slug.String == "" {
 		var createdAt time.Time
 		if userPr.CreatedAt.Valid {

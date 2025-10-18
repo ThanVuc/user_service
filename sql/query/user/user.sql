@@ -1,7 +1,7 @@
 -- name: InsertUser :one
-INSERT INTO users (id, email, created_at, updated_at)
-VALUES ($1, $2, $3, $4)
-RETURNING id, email, created_at, updated_at;
+INSERT INTO users (id, email,fullname, created_at, updated_at, avatar_url)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, email,fullname, created_at, updated_at, avatar_url;
 
 -- name: GetUserProfile :one
 SELECT
@@ -39,5 +39,3 @@ UPDATE users
 SET slug = $2
 WHERE id = $1
 RETURNING id;
-
-

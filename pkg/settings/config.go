@@ -15,6 +15,7 @@ type Config struct {
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
 	RabbitMQ RabbitMQ `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
+	R2       R2       `mapstructure:"r2" json:"r2" yaml:"r2"`
 }
 
 type Progres struct {
@@ -59,4 +60,14 @@ type Server struct {
 	MaxSendMsgSize   int    `mapstructure:"max_send_msg_size" json:"max_send_msg_size" yaml:"max_send_msg_size"`
 	KeepaliveTime    int    `mapstructure:"keepalive_time" json:"keepalive_time" yaml:"keepalive_time"`          // in seconds
 	KeepaliveTimeout int    `mapstructure:"keepalive_timeout" json:"keepalive_timeout" yaml:"keepalive_timeout"` // in seconds
+}
+
+type R2 struct {
+	AccountID       string `mapstructure:"account_id" json:"account_id" yaml:"account_id"`
+	Endpoint        string `mapstructure:"endpoint" json:"endpoint" yaml:"endpoint"`
+	AccessKeyID     string `mapstructure:"access_key_id" json:"access_key_id" yaml:"access_key_id"`
+	SecrecAccessKey string `mapstructure:"secret_access_key" json:"secret_access_key" yaml:"secret_access_key"`
+	BucketName      string `mapstructure:"bucket" json:"bucket" yaml:"bucket"`
+	UseSSL          bool   `mapstructure:"use_ssl" json:"use_ssl" yaml:"use_ssl"`
+	PublicURL       string `mapstructure:"public_url" json:"public_url" yaml:"public_url"`
 }

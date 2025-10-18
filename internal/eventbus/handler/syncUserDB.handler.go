@@ -20,7 +20,9 @@ type SyncAuthHandler struct {
 type UserOutboxPayload struct {
 	UserID    string `json:"user_id"`
 	Email     string `json:"email"`
+	Fullname  string `json:"name"`
 	CreatedAt int64  `json:"created_at"`
+	Picture   string `json:"avatar_url"`
 }
 
 func NewSyncAuthHandler() *SyncAuthHandler {
@@ -50,8 +52,10 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 	_, err = h.sqlc.InsertUser(ctx, database.InsertUserParams{
 		ID:        userId,
 		Email:     userPayload.Email,
+		Fullname:  pgtype.Text{String: userPayload.Fullname, Valid: userPayload.Fullname != ""},
 		CreatedAt: createdAt,
 		UpdatedAt: createdAt,
+		AvatarUrl: pgtype.Text{String: userPayload.Picture, Valid: userPayload.Picture != ""},
 	})
 	if err != nil {
 		return err

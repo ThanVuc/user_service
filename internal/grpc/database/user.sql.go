@@ -65,38 +65,46 @@ func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) (GetUserPr
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (id, email, created_at, updated_at)
-VALUES ($1, $2, $3, $4)
-RETURNING id, email, created_at, updated_at
+INSERT INTO users (id, email,fullname, created_at, updated_at, avatar_url)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, email,fullname, created_at, updated_at, avatar_url
 `
 
 type InsertUserParams struct {
 	ID        pgtype.UUID
 	Email     string
+	Fullname  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
+	AvatarUrl pgtype.Text
 }
 
 type InsertUserRow struct {
 	ID        pgtype.UUID
 	Email     string
+	Fullname  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
+	AvatarUrl pgtype.Text
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
 	row := q.db.QueryRow(ctx, insertUser,
 		arg.ID,
 		arg.Email,
+		arg.Fullname,
 		arg.CreatedAt,
 		arg.UpdatedAt,
+		arg.AvatarUrl,
 	)
 	var i InsertUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
+		&i.Fullname,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AvatarUrl,
 	)
 	return i, err
 }
