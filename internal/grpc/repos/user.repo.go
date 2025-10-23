@@ -122,5 +122,4 @@ func (ur *userRepo) UpdateUserProfile(ctx context.Context, req *user.UpdateUserP
 	}
 
 	return &userId, nil
-
 }
