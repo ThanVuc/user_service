@@ -21,5 +21,5 @@ var (
 	PostgresPool      *pgxpool.Pool
 	RedisDb           *cache.RedisCache
 	EventBusConnector *eventbus.RabbitMQConnector
-	R2Client          *storage.Client
+	R2Client          *storage.R2Client
 )
