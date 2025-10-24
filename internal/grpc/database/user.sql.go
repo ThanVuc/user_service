@@ -65,16 +65,23 @@ func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) (GetUserPr
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (id, email, created_at, updated_at)
-VALUES ($1, $2, $3, $4)
-RETURNING id, email, created_at, updated_at
+INSERT INTO users (id, email,fullname, created_at, updated_at, avatar_url)
+VALUES ($1, NULLIF($2, ''), NULLIF($3, ''), $4, $5, NULLIF($6, ''))
+ON CONFLICT (id) DO UPDATE SET
+    email = COALESCE(EXCLUDED.email, users.email),
+    fullname = COALESCE(EXCLUDED.fullname, users.fullname),
+    avatar_url = COALESCE(EXCLUDED.avatar_url, users.avatar_url),
+    updated_at = EXCLUDED.updated_at
+RETURNING id, email,fullname, created_at, updated_at, avatar_url
 `
 
 type InsertUserParams struct {
 	ID        pgtype.UUID
-	Email     string
+	Column2   interface{}
+	Column3   interface{}
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
+	Column6   interface{}
 }
 
 type InsertUserRow struct {
@@ -87,9 +94,11 @@ type InsertUserRow struct {
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
 	row := q.db.QueryRow(ctx, insertUser,
 		arg.ID,
-		arg.Email,
+		arg.Column2,
+		arg.Column3,
 		arg.CreatedAt,
 		arg.UpdatedAt,
+		arg.Column6,
 	)
 	var i InsertUserRow
 	err := row.Scan(
@@ -99,6 +108,26 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateAvatarById = `-- name: UpdateAvatarById :one
+UPDATE users
+SET avatar_url = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id
+`
+
+type UpdateAvatarByIdParams struct {
+	ID        pgtype.UUID
+	AvatarUrl pgtype.Text
+}
+
+func (q *Queries) UpdateAvatarById(ctx context.Context, arg UpdateAvatarByIdParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, updateAvatarById, arg.ID, arg.AvatarUrl)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const updateSlugById = `-- name: UpdateSlugById :one
@@ -123,11 +152,12 @@ func (q *Queries) UpdateSlugById(ctx context.Context, arg UpdateSlugByIdParams) 
 const updateUserProfile = `-- name: UpdateUserProfile :one
 UPDATE users
 SET fullname      = $2,
-    bio           = $3,
-    date_of_birth = $4,
-    gender        = $5,
-    sentence      = $6,
-    author        = $7,
+    avatar_url    = $3,
+    bio           = $4,
+    date_of_birth = $5,
+    gender        = $6,
+    sentence      = $7,
+    author        = $8,
     updated_at    = NOW()
 WHERE id = $1
 RETURNING id
@@ -136,6 +166,7 @@ RETURNING id
 type UpdateUserProfileParams struct {
 	ID          pgtype.UUID
 	Fullname    pgtype.Text
+	AvatarUrl   pgtype.Text
 	Bio         pgtype.Text
 	DateOfBirth pgtype.Timestamptz
 	Gender      pgtype.Bool
@@ -147,6 +178,7 @@ func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfilePa
 	row := q.db.QueryRow(ctx, updateUserProfile,
 		arg.ID,
 		arg.Fullname,
+		arg.AvatarUrl,
 		arg.Bio,
 		arg.DateOfBirth,
 		arg.Gender,
