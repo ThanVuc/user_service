@@ -21,6 +21,8 @@ type UserOutboxPayload struct {
 	UserID    string `json:"user_id"`
 	Email     string `json:"email"`
 	CreatedAt int64  `json:"created_at"`
+	Fullname  string `json:"name"`
+	Picture   string `json:"avatar_url"`
 }
 
 func NewSyncAuthHandler() *SyncAuthHandler {
@@ -36,7 +38,23 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 		return err
 	}
 
-	// Insert user into the database
+	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0  {
+		userId, err := utils.ToUUID(userPayload.UserID)
+		if err != nil {
+			return err
+		}
+
+		_, err = h.sqlc.UpdateAvatarById(ctx, database.UpdateAvatarByIdParams{
+			ID:        userId,
+			AvatarUrl: pgtype.Text{String: userPayload.Picture, Valid: userPayload.Picture != ""},
+		})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	userId, err := utils.ToUUID(userPayload.UserID)
 	if err != nil {
 		return err
@@ -49,9 +67,11 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 
 	_, err = h.sqlc.InsertUser(ctx, database.InsertUserParams{
 		ID:        userId,
-		Email:     userPayload.Email,
+		Column2:   userPayload.Email,
+		Column3:   pgtype.Text{String: userPayload.Fullname, Valid: userPayload.Fullname != ""},
 		CreatedAt: createdAt,
 		UpdatedAt: createdAt,
+		Column6:   pgtype.Text{String: userPayload.Picture, Valid: userPayload.Picture != ""},
 	})
 	if err != nil {
 		return err
