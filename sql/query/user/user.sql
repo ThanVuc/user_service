@@ -28,12 +28,11 @@ WHERE u.id = $1;
 -- name: UpdateUserProfile :one
 UPDATE users
 SET fullname      = $2,
-    avatar_url    = $3,
-    bio           = $4,
-    date_of_birth = $5,
-    gender        = $6,
-    sentence      = $7,
-    author        = $8,
+    bio           = $3,
+    date_of_birth = $4,
+    gender        = $5,
+    sentence      = $6,
+    author        = $7,
     updated_at    = NOW()
 WHERE id = $1
 RETURNING id;
