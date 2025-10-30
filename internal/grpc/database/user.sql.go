@@ -87,8 +87,10 @@ type InsertUserParams struct {
 type InsertUserRow struct {
 	ID        pgtype.UUID
 	Email     string
+	Fullname  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
+	AvatarUrl pgtype.Text
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -104,8 +106,10 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
+		&i.Fullname,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AvatarUrl,
 	)
 	return i, err
 }
@@ -152,12 +156,11 @@ func (q *Queries) UpdateSlugById(ctx context.Context, arg UpdateSlugByIdParams) 
 const updateUserProfile = `-- name: UpdateUserProfile :one
 UPDATE users
 SET fullname      = $2,
-    avatar_url    = $3,
-    bio           = $4,
-    date_of_birth = $5,
-    gender        = $6,
-    sentence      = $7,
-    author        = $8,
+    bio           = $3,
+    date_of_birth = $4,
+    gender        = $5,
+    sentence      = $6,
+    author        = $7,
     updated_at    = NOW()
 WHERE id = $1
 RETURNING id
@@ -166,7 +169,6 @@ RETURNING id
 type UpdateUserProfileParams struct {
 	ID          pgtype.UUID
 	Fullname    pgtype.Text
-	AvatarUrl   pgtype.Text
 	Bio         pgtype.Text
 	DateOfBirth pgtype.Timestamptz
 	Gender      pgtype.Bool
@@ -178,7 +180,6 @@ func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfilePa
 	row := q.db.QueryRow(ctx, updateUserProfile,
 		arg.ID,
 		arg.Fullname,
-		arg.AvatarUrl,
 		arg.Bio,
 		arg.DateOfBirth,
 		arg.Gender,
