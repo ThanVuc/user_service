@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thanvuc/go-core-lib/log"
+	"go.uber.org/zap"
 )
 
 type SyncAuthHandler struct {
@@ -37,8 +38,8 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 	if err := json.Unmarshal(payload, &userPayload); err != nil {
 		return err
 	}
-
-	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0  {
+	h.logger.Info("Sync user DB handler received payload", "", zap.Any("payload", userPayload))
+	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0 {
 		userId, err := utils.ToUUID(userPayload.UserID)
 		if err != nil {
 			return err
