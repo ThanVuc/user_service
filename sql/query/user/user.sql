@@ -1,12 +1,11 @@
 -- name: InsertUser :one
-INSERT INTO users (id, email,fullname, created_at, updated_at, avatar_url)
-VALUES ($1, NULLIF($2, ''), NULLIF($3, ''), $4, $5, NULLIF($6, ''))
+INSERT INTO users (id, email, fullname, created_at, updated_at)
+VALUES ($1, NULLIF($2, ''), NULLIF($3, ''), $4, $5)
 ON CONFLICT (id) DO UPDATE SET
     email = COALESCE(EXCLUDED.email, users.email),
     fullname = COALESCE(EXCLUDED.fullname, users.fullname),
-    avatar_url = COALESCE(EXCLUDED.avatar_url, users.avatar_url),
     updated_at = EXCLUDED.updated_at
-RETURNING id, email,fullname, created_at, updated_at, avatar_url;
+RETURNING id, email, fullname, created_at, updated_at;
 
 -- name: GetUserProfile :one
 SELECT
