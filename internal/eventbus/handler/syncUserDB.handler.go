@@ -72,7 +72,6 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 		Column3:   pgtype.Text{String: userPayload.Fullname, Valid: userPayload.Fullname != ""},
 		CreatedAt: createdAt,
 		UpdatedAt: createdAt,
-		Column6:   pgtype.Text{String: userPayload.Picture, Valid: userPayload.Picture != ""},
 	})
 	if err != nil {
 		return err
