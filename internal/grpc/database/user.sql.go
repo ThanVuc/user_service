@@ -65,14 +65,13 @@ func (q *Queries) GetUserProfile(ctx context.Context, id pgtype.UUID) (GetUserPr
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (id, email,fullname, created_at, updated_at, avatar_url)
-VALUES ($1, NULLIF($2, ''), NULLIF($3, ''), $4, $5, NULLIF($6, ''))
+INSERT INTO users (id, email, fullname, created_at, updated_at)
+VALUES ($1, NULLIF($2, ''), NULLIF($3, ''), $4, $5)
 ON CONFLICT (id) DO UPDATE SET
     email = COALESCE(EXCLUDED.email, users.email),
     fullname = COALESCE(EXCLUDED.fullname, users.fullname),
-    avatar_url = COALESCE(EXCLUDED.avatar_url, users.avatar_url),
     updated_at = EXCLUDED.updated_at
-RETURNING id, email,fullname, created_at, updated_at, avatar_url
+RETURNING id, email, fullname, created_at, updated_at
 `
 
 type InsertUserParams struct {
@@ -81,7 +80,6 @@ type InsertUserParams struct {
 	Column3   interface{}
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
-	Column6   interface{}
 }
 
 type InsertUserRow struct {
@@ -90,7 +88,6 @@ type InsertUserRow struct {
 	Fullname  pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
-	AvatarUrl pgtype.Text
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -100,7 +97,6 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.Column3,
 		arg.CreatedAt,
 		arg.UpdatedAt,
-		arg.Column6,
 	)
 	var i InsertUserRow
 	err := row.Scan(
@@ -109,7 +105,6 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		&i.Fullname,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.AvatarUrl,
 	)
 	return i, err
 }
