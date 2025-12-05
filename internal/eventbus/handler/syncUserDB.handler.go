@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thanvuc/go-core-lib/log"
+	"go.uber.org/zap"
 )
 
 type SyncAuthHandler struct {
@@ -33,14 +34,17 @@ func NewSyncAuthHandler() *SyncAuthHandler {
 }
 
 func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error {
+	requestID := utils.GetRequestIDFromOutgoingContext(ctx)
 	var userPayload UserOutboxPayload
 	if err := json.Unmarshal(payload, &userPayload); err != nil {
 		return err
 	}
+	h.logger.Info("Sync user DB handler invoked", requestID, zap.String("picture", userPayload.Picture))
 
-	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0  {
+	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0 {
 		userId, err := utils.ToUUID(userPayload.UserID)
 		if err != nil {
+			h.logger.Error("Failed to parse user ID", requestID, zap.Error(err))
 			return err
 		}
 
@@ -49,6 +53,7 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 			AvatarUrl: pgtype.Text{String: userPayload.Picture, Valid: userPayload.Picture != ""},
 		})
 		if err != nil {
+			h.logger.Error("Failed to update user avatar", requestID, zap.Error(err))
 			return err
 		}
 
@@ -57,6 +62,7 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 
 	userId, err := utils.ToUUID(userPayload.UserID)
 	if err != nil {
+		h.logger.Error("Failed to parse user ID", requestID, zap.Error(err))
 		return err
 	}
 
@@ -73,6 +79,7 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 		UpdatedAt: createdAt,
 	})
 	if err != nil {
+		h.logger.Error("Failed to insert user", requestID, zap.Error(err))
 		return err
 	}
 
