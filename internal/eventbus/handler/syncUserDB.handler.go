@@ -40,7 +40,7 @@ func (h *SyncAuthHandler) SyncUserDB(ctx context.Context, payload []byte) error 
 		return err
 	}
 	h.logger.Info("Sync user DB handler invoked", requestID, zap.String("picture", userPayload.Picture))
-
+	
 	if userPayload.Email == "" && userPayload.Fullname == "" && userPayload.CreatedAt == 0 {
 		userId, err := utils.ToUUID(userPayload.UserID)
 		if err != nil {
